@@ -33,9 +33,9 @@ from bounds import CheckBounds
 import matplotlib.pyplot as plt
 from itertools import chain
 import platform
-import tent.tent as tent
 import random
 import ast
+import networks 
 
 def setup(args, n_class, dtype) -> Tuple[
     Any, Any, Any, List[Callable], List[float], List[Callable], List[float], Callable]:
@@ -59,7 +59,7 @@ def setup(args, n_class, dtype) -> Tuple[
     if args.do_not_config_mod:
         print('WARNING all var updated')
     else:
-        net = tent.configure_model(net)
+        net = networks.configure_model(net)
         print('normalization statistics updated')
     if args.saveim:
         print("WARNING: Saving masks at each epc")
@@ -67,10 +67,6 @@ def setup(args, n_class, dtype) -> Tuple[
     optimizer = torch.optim.Adam(net.parameters(), lr=args.l_rate, betas=(0.9, 0.999), weight_decay=args.weight_decay)
     if args.adamw:
         optimizer = torch.optim.AdamW(net.parameters(), lr=args.l_rate, betas=(0.9, 0.999))
-    if not args.notent:
-        tented_model = tent.Tent(net, optimizer)
-    else:
-        tented_model = net
     print(args.target_losses)
     losses = eval(args.target_losses)
     loss_fns: List[Callable] = []
@@ -91,7 +87,7 @@ def setup(args, n_class, dtype) -> Tuple[
     else:
         scheduler = ''
 
-    return tented_model, optimizer, device, loss_fns, loss_weights, scheduler, n_epoch, momfn
+    return net, optimizer, device, loss_fns, loss_weights, scheduler, n_epoch, momfn
 
 
 def do_epoch(args, mode: str, net: Any, device: Any, epc: int,
@@ -101,7 +97,7 @@ def do_epoch(args, mode: str, net: Any, device: Any, epc: int,
     assert mode in ["train", "val"]
     L: int = len(loss_fns)
     indices = torch.tensor(metric_axis, device=device)
-    desc = f">> Tent ({epc})"
+    desc = f">> TTA ({epc})"
 
     total_it_t, total_images_t = len(target_loader), len(target_loader.dataset)
     total_iteration = total_it_t
@@ -161,14 +157,11 @@ def do_epoch(args, mode: str, net: Any, device: Any, epc: int,
             assert len(labels) == len(bounds), len(bounds)
             B = len(target_image)
             # Reset gradients
-            if optimizer and args.notent:
+            if optimizer:
                 optimizer.zero_grad()
 
             # Forward
-            if args.notent:
-                pred_logits = net(target_image)
-            else:
-                pred_logits = net(target_image, target_gt)
+            pred_logits = net(target_image)
             pred_probs: Tensor = F.softmax(pred_logits/args.softmax_temp, dim=1)
             if new_w > 0:
                 pred_probs = resize(pred_probs, new_w)
@@ -209,7 +202,7 @@ def do_epoch(args, mode: str, net: Any, device: Any, epc: int,
                     loss = w * loss
                     loss_1 = loss
                     loss_kw.append(loss_1.detach())
-            if optimizer and args.notent:
+            if optimizer:
                 loss.backward()
                 optimizer.step()
             dices, inter_card, card_gt, card_pred = dice_coef(predicted_mask.detach(), target_gt.detach())
@@ -611,7 +604,6 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("--dice_3d", action="store_true")
     parser.add_argument("--ontest", action="store_true")
     parser.add_argument("--adw", action="store_true")
-    parser.add_argument("--notent", action="store_true")
     parser.add_argument("--oneslice", action="store_true")
     parser.add_argument("--testonly", action="store_true")
     parser.add_argument("--trainonly", action="store_true")
