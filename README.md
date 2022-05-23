@@ -12,11 +12,11 @@ Please cite our paper if you find it useful for your research.
 
 ```
 
-@article{https://doi.org/10.48550/arxiv.2205.07983,
-  doi = {10.48550/ARXIV.2205.07983},
-  url = {https://arxiv.org/abs/2205.07983},
+@article{BatesonTTA,
   author = {Bateson, Mathilde and Lombaert, Hervé and Ayed, Ismail Ben},
   title = {Test-Time Adaptation with Shape Moments for Image Segmentation},
+  doi = {10.48550/ARXIV.2205.07983},
+  url = {https://arxiv.org/abs/2205.07983},
   publisher = {arXiv},
   year = {2022},
   copyright = {Creative Commons Attribution 4.0 International}
