@@ -6,21 +6,21 @@ Code of our submission at [MICCAI 2022] and its ongoing journal extension.
 
 
 * [MICCAI 2022]
-* [arXiv preprint](https://arxiv.org/abs/2005.03697)
+* [arXiv preprint](https://arxiv.org/abs/2205.07983)
 
 Please cite our paper if you find it useful for your research.
 
 ```
 
-@inproceedings{BatesonSFDA,
-	Author = {Bateson, Mathilde and Kervadec, Hoel and Dolz, Jose and Lombaert, Herv{\'e} and Ben Ayed, Ismail},
-	Booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2020},
-	Pages = {490--499},
-	Publisher = {Springer International Publishing},
-	Title = {Source-Relaxed Domain Adaptation for Image Segmentation},
-	Year = {2020}
-    Address = {Cham}}
-
+@article{https://doi.org/10.48550/arxiv.2205.07983,
+  doi = {10.48550/ARXIV.2205.07983},
+  url = {https://arxiv.org/abs/2205.07983},
+  author = {Bateson, Mathilde and Lombaert, Hervé and Ayed, Ismail Ben},
+  title = {Test-Time Adaptation with Shape Moments for Image Segmentation},
+  publisher = {arXiv},
+  year = {2022},
+  copyright = {Creative Commons Attribution 4.0 International}
+}
 ```
 
 
