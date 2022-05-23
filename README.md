@@ -23,7 +23,7 @@ Please cite our paper if you find it useful for your research.
 }
 ```
 
-
+![Visual comparison](figure/seg.png)
 
 ## Requirements
 Non-exhaustive list:
