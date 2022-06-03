@@ -1,5 +1,4 @@
 import torch
-#from torch._six import int_classes as _int_classes
 
 
 class Sampler(object):
