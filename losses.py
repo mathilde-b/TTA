@@ -99,7 +99,6 @@ class DiceLoss():
         union: Tensor = (einsum(f"bkwh->bk", pc) + einsum(f"bkwh->bk", tc))
 
         divided: Tensor = torch.ones_like(intersection) - (2 * intersection + 1e-10) / (union + 1e-10)
-
         loss = divided.mean()
 
         return loss
