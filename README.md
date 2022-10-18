@@ -2,7 +2,7 @@
 
 [Mathilde Bateson](https://github.com/mathilde-b), Hervé Lombaert, Ismail Ben Ayed @ETS Montréal
 
-Code of our submission at [MICCAI 2022] and its ongoing journal extension. 
+Code of our submission at [MICCAI 2022](https://link.springer.com/chapter/10.1007/978-3-031-16440-8_70) and its ongoing journal extension. 
 
 
 * [MICCAI 2022](https://link.springer.com/chapter/10.1007/978-3-031-16440-8_70)
