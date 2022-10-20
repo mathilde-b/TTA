@@ -4,7 +4,6 @@
 
 Code of our submission at [MICCAI 2022](https://link.springer.com/chapter/10.1007/978-3-031-16440-8_70) and its ongoing journal extension. 
 
-
 * [MICCAI 2022](https://link.springer.com/chapter/10.1007/978-3-031-16440-8_70)
 * [arXiv preprint](https://arxiv.org/abs/2205.07983)
 
