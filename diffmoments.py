@@ -6,7 +6,6 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
-
 ## Moments returned in xy
 def moment_raw(r, i, j):
     b, c, w, h = r.shape
