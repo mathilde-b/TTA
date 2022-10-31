@@ -234,7 +234,6 @@ class EntKLProp():
         mask_weighted = torch.einsum("bcwh,c->bcwh", [mask, Tensor(self.weights).to(mask.device)])
         loss_se = - torch.einsum("bcwh,bcwh->", [mask_weighted, log_p])
         loss_se /= mask.sum() + 1e-10
-
         assert loss_se.requires_grad == probs.requires_grad  # Handle the case for validation
 
         return self.lamb_se*loss_se, self.lamb_consprior*loss_cons_prior,est_prop 
@@ -358,7 +357,6 @@ class GeneralizedDice():
         intersection: Tensor = w * einsum("bcwh,bcwh->bc", pc, tc)
         union: Tensor = w * (einsum("bcwh->bc", pc) + einsum("bcwh->bc", tc))
         divided: Tensor = 1 - 2 * (einsum("bc->b", intersection) + 1e-10) / (einsum("bc->b", union) + 1e-10)
-
         loss = divided.mean()
-
+        
         return loss
