@@ -354,11 +354,9 @@ class GeneralizedDice():
 
         pc = probs[:, self.idc, ...].type(torch.float32)
         tc = target[:, self.idc, ...].type(torch.float32)
-
         w: Tensor = 1 / ((einsum("bcwh->bc", tc).type(torch.float32) + 1e-10) ** 2)
         intersection: Tensor = w * einsum("bcwh,bcwh->bc", pc, tc)
         union: Tensor = w * (einsum("bcwh->bc", pc) + einsum("bcwh->bc", tc))
-
         divided: Tensor = 1 - 2 * (einsum("bc->b", intersection) + 1e-10) / (einsum("bc->b", union) + 1e-10)
 
         loss = divided.mean()
