@@ -145,9 +145,7 @@ class EntKLPropWMoment():
         size_pred = soft_size(predicted_mask[:, self.idc, ...].type(torch.float32))
         size_gt = soft_size(target[:, self.idc, ...].type(torch.float32))
         bool_size = (size_pred > 10).type(torch.float32)
-
         bool_gt_size = (size_gt > 1).type(torch.float32)
-
         loss_cons_prior = - torch.einsum("bc,bc->", [est_prop, log_gt_prop]) + torch.einsum("bc,bc->", [est_prop, log_est_prop])
         loss_cons_prior /= b
         loss_cons_prior *= self.temp
