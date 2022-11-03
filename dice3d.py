@@ -53,7 +53,6 @@ def dice3d(all_grp,all_inter_card,all_card_gt,all_card_pred,all_pred,all_gt,all_
     dice_3d_sd = torch.round(dice_3d_sd * 10**4) / (10**4)
 
     # do HD and / or ASD
-    #if dice_3d_mean.mean()>best_epoch_val:
     if dice_3d_mean.mean()>0:
         for i, p in enumerate(unique_patients):
             root_name = [re.split('(\d+)', x.item())[0] for x in all_pnames][0]
