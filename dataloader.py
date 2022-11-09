@@ -61,7 +61,6 @@ def get_loaders(args, data_folder: str, subfolders:str,
         partial(class2one_hot, C=n_class),
         lambda nd: nd[:,:,0:384,0:384],
         itemgetter(0),
-        #lambda nd: print(nd.shape,"nii gt rtans")
     ])
 
 
@@ -69,18 +68,14 @@ def get_loaders(args, data_folder: str, subfolders:str,
         #lambda img: np.array(img)[np.newaxis, ...],
         lambda nd: torch.tensor(nd, dtype=torch.float32),
         lambda nd: nd[:, 0:384, 0:384],
-        #lambda nd: nd[:,0:384,0:384],
         lambda nd: (nd-nd.min()) / (nd.max()-nd.min()),  # max <= 1
-        #lambda nd: print(nd.shape),
     ])
 
     nii_gt_transform_expand = transforms.Compose([
         lambda img: np.array(img)[np.newaxis, ...],
         lambda nd: torch.tensor(nd, dtype=torch.int64),
-        #lambda nd: nd[:,0:384,0:384],
         partial(class2one_hot, C=n_class),
         itemgetter(0),
-        #lambda nd: print(nd.shape,"nii gt rtans")
     ])
 
     png_transform = transforms.Compose([
@@ -195,7 +190,6 @@ def get_loaders(args, data_folder: str, subfolders:str,
     # Prepare the datasets and dataloaders
     train_folders: List[Path] = [Path(data_folder, "train", f) for f in folders]
     if args.trainval:
-        #train_folders: List[Path] = [Path(data_folder, "trainval", f) for f in folders]
         train_folders: List[Path] = [Path(data_folder, "train", f) for f in folders]+[Path(data_folder, "val", f) for f in folders]
     elif args.trainonly:
         train_folders: List[Path] = [Path(data_folder, "train", f) for f in folders]
@@ -205,52 +199,16 @@ def get_loaders(args, data_folder: str, subfolders:str,
         train_folders: List[Path] = [Path(data_folder, "test", f) for f in folders]
     elif args.direct:
         train_folders: List[Path] = [Path(data_folder, f) for f in folders]
-    #if args.ontrain1:
-    #    train_folders: List[Path] = [Path(data_folder, "train1", f) for f in folders]
     # I assume all files have the same name inside their folder: makes things much easier
-    #print(list(train_folders[0].glob("*nii")))
-    #print(train_folders,"train_folders",args.train_grp_regex)
     train_names: List[str] = map_(lambda p: str(p.name), train_folders[0].glob(args.train_grp_regex+"*nii"))
     if args.trainval:
         train_names: List[str] = map_(lambda p: str(p.name), train_folders[0].glob(args.train_grp_regex + "*nii")) + \
                                  map_(lambda p: str(p.name), train_folders[4].glob(args.train_grp_regex + "*nii"))
-    #print("train_names",train_names)
 
     if len(train_names)==0:
         train_names: List[str] = map_(lambda p: str(p.name), train_folders[0].glob(args.train_grp_regex+"*.png"))
     if len(train_names)==0:
         train_names: List[str] = map_(lambda p: str(p.name), train_folders[0].glob("*.npy"))
-    #train_names.sort()
-    if args.train_case_nb > 0:
-        # print('hello')
-        vec_prostate = ["Case00", "Case01", "Case03", "Case04", "Case06", "Case09", "Case10", "Case11", "Case13", "Case14",
-               "Case16", "Case18","Case19", "Case21", "Case23", "Case24", "Case25", "Case27", "Case28", "Case29"]
-        vec_ivd = ["Subj_" + str(i) for i in chain(range(1, 5), range(6, 15))]
-        #aug_vec_ivd = ['a'+ v for v in vec_ivd] +['b'+v for v in vec_ivd] +['c'+v for v in vec_ivd] + ['d'+v for v in vec_ivd] + ['w'+v for v in vec_ivd]
-        if args.valonly:
-            vec_ivd = ["Subj_" + str(i) for i in chain(range(0,1), range(5, 6), range(15, 16))]
-            random.shuffle(vec_ivd)
-            aug_vec_ivd = ['a'+ v for v in vec_ivd] +['b'+v for v in vec_ivd]+['w'+v for v in vec_ivd]
-        #vec_ivd +=aug_vec_ivd
-        print(train_names[0])
-
-        root_name = re.split('(\d+)', train_names[0])[0]
-        extension = Path(train_names[0]).suffix
-        if root_name=="Case":
-            vec = vec_prostate
-        else:
-            vec = vec_ivd
-        if args.specific_subj:
-            vec = [args.specific_subj]
-        random.shuffle(vec)
-        train_names = []
-        #print(vec,'vec')
-        for i in range(0, args.train_case_nb):
-            tmp_reg = "*"+vec[i] + "_*"+extension
-            print(tmp_reg,'tmp reg')
-            tmp_train_names: List[str] = map_(lambda p: str(p.name), train_folders[0].glob(tmp_reg))
-            train_names = train_names + tmp_train_names
-            #print(train_names)
 
     train_set = gen_dataset(train_names,
                             train_folders)
@@ -258,11 +216,6 @@ def get_loaders(args, data_folder: str, subfolders:str,
         train_set_noaug = gen_dataset_noaug(train_names,
                                 train_folders)
         train_set = Concat([train_set, train_set_noaug])
-    #if fix_size!=[0,0] and len(train_set)<fix_size[0]:
-        #nb_to_add= fix_size[0] - len(train_set)
-        #print("nb_to_add", nb_to_add)
-        #train_set_2 = RandomSampler(train_set, replacement=True, num_samples=nb_to_add)
-     #   train_set =  Concat([train_set, train_set])
 
     train_loader = data_loader(train_set,
                                batch_size=batch_size,
@@ -298,15 +251,6 @@ def get_loaders(args, data_folder: str, subfolders:str,
     val_set = valgen_dataset(val_names,
                           val_folders)
 
-    #if fix_size!=[0,0] and len(val_set)<fix_size[1]:
-        #nb_to_add= fix_size[1] - len(val_set)
-        #val_set_2 = RandomSampler(val_set, replacement=True, num_samples=nb_to_add)
-        #val_set =  Concat([val_set, val_set, val_set, val_set , val_set])
-
-    #val_sampler = PatientSampler(val_set, args.grp_regex, shuffle=shuffle)
-    # val_sampler = None
-    # val_loader = data_loader(val_set,
-    #                          batch_sampler=val_sampler)
 
     val_loader = data_loader(val_set,
                             batch_size=batch_size,
@@ -386,7 +330,6 @@ class SliceDataset(Dataset):
         filename: str = self.filenames[index]
         path_name: Path = Path(filename)
         images: List[D]
-        #print('get',self.folders, filename)
         try:
             files  = SliceDataset.load_images(self.folders[0:3], [filename], self.in_memory)
         except:
@@ -411,7 +354,6 @@ class SliceDataset(Dataset):
             raise ValueError(filename)
         if self.augment:
             images = augment(*images)
-        #print(np.unique(images[1], "after reading"))
         assert self.check_files()  # Make sure all file exists
         # Final transforms and assertions
         t_tensors: List[Tensor] = [tr(e) for (tr, e) in zip(self.transforms, images)]
@@ -426,8 +368,6 @@ class SliceDataset(Dataset):
             #assert ttensor.shape == (self.C, w, h)
 
         img, gt = t_tensors[:2]
-        #print(np.unique(gt),"np unqie gt in dataloader")
-        #print(gt.shape)
         bounds = [f(img, gt, t, filename) for f, t in zip(self.bounds_generators, t_tensors[2:])]
         try:
             bounds = [f(img, gt, t, filename) for f, t in zip(self.bounds_generators, t_tensors[2:])]
