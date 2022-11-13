@@ -592,7 +592,7 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("--flr", action="store_true")
     parser.add_argument("--augment", action="store_true")
     parser.add_argument("--do_hd", type=bool, default=False)
-    parser.add_argument("--global_model", action="store_true")
+    parser.add_argument("--global_model", type=bool, default=True)
     parser.add_argument("--do_asd", type=bool, default=False)
     parser.add_argument("--saveim", type=bool, default=False)
     parser.add_argument("--thl", type=str, default='med')
