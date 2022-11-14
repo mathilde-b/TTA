@@ -45,19 +45,11 @@ class AbstractConstraints():
         assert two == 2
 
         value: Tensor = cast(Tensor, self.__fn__(probs[:, self.idc, ...]))
-        #size_pred = soft_size(predicted_mask[:, self.idc, ...].type(torch.float32))
-        #bool_size = (size_pred > 10).type(torch.float32)
-        #print("before",value)
-        #print(value.shape,bool_size.shape)
-        #value = torch.einsum("bco,bco->bco", [value, bool_size])
-        #print("after", value)
         lower_b = bounds[:, self.idc, :, 0]
-        #print("lower_b",lower_b)
         upper_b = bounds[:, self.idc, :, 1]
 
         assert value.shape == (b, self.C, k), value.shape
         assert lower_b.shape == upper_b.shape == (b, self.C, k), lower_b.shape
-        #print(" estimation from probs: ",value,"gt: ", lower_b, "gt size", soft_size(target[:, self.idc, ...]))
         upper_z: Tensor = cast(Tensor, (value - upper_b).type(torch.float32)).reshape(b, self.C * k)
         lower_z: Tensor = cast(Tensor, (lower_b - value).type(torch.float32)).reshape(b, self.C * k)
         #assert len(upper_z) == len(lower_b) == len(filenames)
