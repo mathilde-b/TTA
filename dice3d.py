@@ -85,8 +85,6 @@ def dice3d(all_grp,all_inter_card,all_card_gt,all_card_pred,all_pred,all_gt,all_
                         else :
                             res_vec = [1,1,1]
                             unit = "voxel"
-                        if res_vec == [1,1,1]:
-                            unit = "voxel"
                         if do_hd > 0:
                             hd_3d_var_vec[j] = hd95(label_pred_c, label_gt_c, res_vec).item()
                         if do_asd > 0:
