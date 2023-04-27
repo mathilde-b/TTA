@@ -168,16 +168,10 @@ def do_epoch(args, mode: str, net: Any, device: Any, epc: int,
                 labels = [resize(label, new_w) for label in labels]
                 target = resize(target, new_w)
             predicted_mask: Tensor = probs2one_hot(pred_probs)  # Used only for dice computation
-            #print(filenames_target,"inertia_gt", inertia_gt,"inertia_pred", inertia_pred,"inertia_probs",
-            #      inertia_probs,"gt size",size_gt,"pred size",size_pred)
-            # print(torch.unique(predicted_mask))
             assert len(bounds) == len(loss_fns) == len(loss_weights)
-            #if epc < n_warmup:
-            #    loss_weights = [0] * len(loss_weights)
             loss: Tensor = torch.zeros(1, requires_grad=True).to(device)
             loss_vec = []
             loss_kw = []
-            #print(len(loss_fns), len(labels), len(loss_weights), len(bounds))
             for i, (loss_fn, label, w, bound) in enumerate(zip(loss_fns, labels, loss_weights, bounds)):
                 if "EntKLProp" in eval(args.target_losses)[i][0]:
                     if epc > 0 and args.update_mom_est and i==0: #i=0 to prevent wrong update if two constraints, only update firsst
@@ -277,14 +271,11 @@ def do_epoch(args, mode: str, net: Any, device: Any, epc: int,
         mom_est0 = get_mom_posmed(C, all_moments_pred0, all_sizes2, args.th)
     else:
         mom_est = get_mom_posav(C, all_moments_pred, all_sizes2, args.th)
-        #mom_med_gt = get_mom_posav(C, all_moments_gt, all_sizes2, args.th)
-        #mom_med_gt0 = get_mom_posav(C, all_moments_gt0, all_sizes2, args.th)
-        #print(mom_med_gt0,mom_med_gt)
+
         mom_est0 = get_mom_posav(C, all_moments_pred0, all_sizes2, args.th)
     if args.update_lin_reg:
         mom_coef = get_linreg_coef(C, all_moments_pred, all_sizes2, args.th)
         mom_coef0 = get_linreg_coef(C, all_moments_pred0, all_sizes2, args.th)
-        #print(mom_coef)
     size_gt_mean = torch.index_select(all_gt_sizes, 1, indices).mean(dim=0).cpu().numpy()
     mask_pos = torch.index_select(all_sizes2, 1, indices) != 0
     gt_pos = torch.index_select(all_gt_sizes, 1, indices) != 0
@@ -337,7 +328,6 @@ def run_subj(args, net, optimizer, device, loss_fns, loss_weights, scheduler, n_
     subj = args.train_grp_regex
     if "prostate" in savedir:
         if args.thl == "low":
-            #args.th = [[0, 100], [384 * 384, 12000]]
             args.th = [[0, 100], [384 * 384, 384 * 384]]
         else:
             args.th = [[0,4000],[384*384,12000]]
